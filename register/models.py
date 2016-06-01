@@ -28,6 +28,13 @@ class StageAgency(models.Model):
         return self.name.encode('utf8')
 
 
+class DergOrgan(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name.encode('utf8')
+
+
 class Commission(models.Model):
     name = models.CharField(max_length=100)
 
@@ -59,14 +66,15 @@ class ExpertSpeciality(models.Model):
 
 
 class Expert(models.Model):
-	name = models.CharField(max_length=100)
-	surname = models.CharField(max_length=100)
-	patronymic = models.CharField(max_length=100)
-	expert_type = models.BooleanField()
-	organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100)
+    patronymic = models.CharField(max_length=100)
+    expert_type = models.BooleanField()
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organ = models.ForeignKey(DergOrgan, on_delete=models.CASCADE)
 
-	def __str__(self):
-		return (self.name + " " + self.surname).encode('utf8')
+    def __str__(self):
+        return (self.name + " " + self.surname).encode('utf8')
 
 
 class Validation(models.Model):
