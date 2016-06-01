@@ -31,7 +31,7 @@
     </thead>
     <tbody>
      {% for expert in experts %}
-      <tr class='clickable-row' data-href='/admin'>
+      <tr class='clickable-row' data-href="{% url 'validation_page' expert.id %}">
         <td>{{ expert.surname }}</td>
         <td>{{ expert.name }}</td>
         <td>{{ expert.patronymic }}</td>
@@ -40,7 +40,7 @@
         {% else %}
         	<td>Не є фахівцем державної установи</td>
         {% endif %}
-        <td>{{ expert.organization }}</td>
+        <td>{{ expert.organ }}</td>
       </tr>
       {% endfor %}
     </tbody>
