@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+
+  	<script src="{% static "jquery-2.2.4.min.js" %}"></script>
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/bootstrap-theme.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/core.css" %}" rel="stylesheet">
+
+	<script src="{% static "js/bootstrap.min.js" %}"></script>
+	<script src="{% static "js/bootstrap.min.js" %}"></script>
+  <style>
+    .btn_rmargin { 
+    margin-right: 10%;
+   }
+    .btn_lmargin { 
+    margin-left: 10%;
+   }
+
+   .inner {
+    display: inline-block;
+  }
+  </style>
+</head>
+
+<body>
+{% if not export_mode %}
+<div class="jumbotron">
+  <center><h2>Experts register</h2></center> 
+</div>
+{% endif %}
+
+{% if organization %}
+<div class="container">           
+  <table class="table table-stripped table-bordered">
+    <thead>
+      <tr>
+        <th>Організація</th>
+        <th>Регіон/Область</th>
+        <th>Адреса</th>
+        <th>Телефон</th>
+      </tr>
+    </thead>
+    <tbody>
+     <tr>
+        <td>{{ organization.name }}</td>
+        <td>{{ organization.region }}</td>
+        <td>{{ organization.address }}</td>
+        <td>{{ organization.phoneNumber }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if validations %}
+<div class="container">           
+  <table class="table table-stripped table-bordered">
+    <thead>
+      <tr>
+        <th>Номер свідоцтва експерта</th>
+        <th>Назва комісії</th>
+        <th>Дата рішення</th>
+        <th>Термін дії</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for validation in validations %}
+     {% if validation.is_actually %}
+      <tr class="success">
+      {% else %}
+      <tr class="danger">
+      {% endif %}
+        <td><b>{{ validation.id }}</b>
+        {% if not validation.is_actually %}
+        <br><b>Свідоцтво недійсне</b>
+        {% endif %}
+        </td>
+        <td>{{ validation.name }}</td>
+        <td>{{ validation.date_begin }}</td>
+        <td>{{ validation.date_end }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+   <p>No objects are available.</p>
+{% endif %}
+
+{% if not export_mode %}
+<div class="inner btn_lmargin">
+  <a type="button" class="btn btn-primary" name="back_button"
+         href="{% url 'main_page' %}">Back to main page
+  </a>
+  </div>
+  <div class="inner pull-right btn_rmargin">
+  <form action= {{ request.get_full_path }} method="get" role="form">
+    {% csrf_token %}
+  <button type="submit" class="btn btn-primary" name="to_pdf_btn">Download as pdf</button>
+  </form>
+  </div>
+{% endif %}
+</body>
+
+</html>
