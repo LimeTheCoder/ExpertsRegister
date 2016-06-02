@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Organization, Validation, Expert, Region, DergOrgan, ExpertSpeciality, StageAgency
+from .models import Organization, Validation, Expert, Region, DergOrgan, ExpertSpeciality, StageAgency, ExpertiseKind, ExpertiseClass
 from django.conf import settings
 import django.utils
 from django.db import IntegrityError
@@ -59,18 +59,23 @@ class ValidationModelTest(TestCase):
 		region = Region.objects.create(name='Kyiv')
 		org = Organization.objects.create(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region', address='Kuiv, Polytecnichna st. 56', phoneNumber='070324', region=region)
 		dorg = DergOrgan.objects.create(name='MID')
-		exp = Expert.objects.check.create(name='Ivan', surname='Ivanov', patronymic='Ivanovich',expert_type=exp_type,organization=org,organ=dorg)
+		exp = Expert.objects.create(name='Ivan', surname='Ivanov', patronymic='Ivanovich',expert_type=exp_type,organization=org,organ=dorg)
 
 		actyal = True
-		exp_sp=ExpertSpeciality.objects.create(name='Transologichna')
+		ex_class=ExpertiseClass.objects.create(name='TransClass')
+		ex_kind=ExpertiseKind.objects.create(name='TransKind', expertise_class= ex_class)
+		exp_sp=ExpertSpeciality.objects.create(name='Transologichna', expertise_kind=ex_kind)
 		st_agen=StageAgency.objects.create(name='MVS')
 
-		Validation.objects.create(name='Validation_test', date_begin='2015-12-31', date_end='2016-12-31', is_actually=actyal, expert_speciality=exp_sp, stage_agency=st_agen, expert=exp)
-		Validation.objects.create(name='Validation_test_1', date_begin='2015-10-8', date_end='2017-12-31', is_actually=actyal, expert_speciality=exp_sp, stage_agency=st_agen, expert=exp)
+		val1 = Validation.objects.create(name='Validation_test', date_begin='2015-12-31', date_end='2016-12-31', is_actually=actyal, stage_agency=st_agen, expert=exp)
+		val2 = Validation.objects.create(name='Validation_test_1', date_begin='2015-10-8', date_end='2017-12-31', is_actually=actyal, stage_agency=st_agen, expert=exp)
+		val1.expert_speciality.add(exp_sp)
+		val2.expert_speciality.add(exp_sp)
+
 
 	def test_creation(self):
 		expert = Validation.objects.get(name='Validation_test')
-		self.assertIsInstance(expert, Expert)
+		self.assertIsInstance(expert, Validation)
 
 	def test_string_representation(self):
 		expert = Validation.objects.get(name='Validation_test')
@@ -81,7 +86,7 @@ class ValidationModelTest(TestCase):
 		self.assertEqual(expert.pk, 1)
 
 	def test_verbose_name_plural(self):
-		self.assertEqual(str(Validation._meta.verbose_name_plural), "validation")
+		self.assertEqual(str(Validation._meta.verbose_name_plural), "validations")
 
 	def test_obj_cnt(self):
 		self.assertEqual(len(Validation.objects.all()), 2)
@@ -116,8 +121,8 @@ class ExpertModelTest(TestCase):
 		region = Region.objects.create(name='Kyiv')
 		org = Organization.objects.create(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region', address='Kuiv, Polytecnichna st. 56', phoneNumber='070324', region=region)
 		dorg = DergOrgan.objects.create(name='MID')
-		Expert.objects.check.create(name='Ivan', surname='Ivanov', patronymic='Ivanovich',expert_type=exp_type,organization=org,organ=dorg)
-		Expert.objects.check.create(name='Petr', surname='Petrov', patronymic='Petrovich',expert_type=exp_type,organization=org,organ=dorg)
+		Expert.objects.create(name='Ivan', surname='Ivanov', patronymic='Ivanovich',expert_type=exp_type,organization=org,organ=dorg)
+		Expert.objects.create(name='Petr', surname='Petrov', patronymic='Petrovich',expert_type=exp_type,organization=org,organ=dorg)
 
 	def test_creation(self):
 		expert = Expert.objects.get(name='Ivan')
@@ -125,14 +130,14 @@ class ExpertModelTest(TestCase):
 
 	def test_string_representation(self):
 		expert = Expert.objects.get(name='Ivan')
-		self.assertEqual(str(expert), expert.name)
+		self.assertEqual(str(expert), expert.name + " " + expert.surname)
 
 	def test_pk(self):
 		expert = Expert.objects.get(name='Ivan')
 		self.assertEqual(expert.pk, 1)
 
 	def test_verbose_name_plural(self):
-		self.assertEqual(str(Expert._meta.verbose_name_plural), "expert")
+		self.assertEqual(str(Expert._meta.verbose_name_plural), "experts")
 
 	def test_obj_cnt(self):
 		self.assertEqual(len(Expert.objects.all()), 2)
