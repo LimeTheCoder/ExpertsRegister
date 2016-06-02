@@ -18,7 +18,7 @@
     margin-right: 10%;
    }
     .btn_l2margin { 
-    margin-left: 10%;
+    margin-left: 22%;
    }
     .btn_lmargin { 
     margin-left: 2%;
@@ -48,12 +48,14 @@
         <div id="filter-panel" class="collapse filter-panel">
             <div class="panel panel-default">
                 <div class="panel-body">
-                  <div class="col-md-4">
+                  <div class="col-md-12">
                     <form action= {{ request.get_full_path }} method="POST">{% csrf_token %}
+                    <div class="form-group inner">
                       <div class="form-group">
                         <label class="filter-col" style="margin-right:0;" for="surname">Прізвище:</label>
                         <input type="text" class="form-control" name="surname" id="surname">
                       </div>
+
                       <div class="form-group">
                         <label class="filter-col" style="margin-right:0;" for="name">Ім'я:</label>
                         <input type="text" class="form-control" name="name" id="name">
@@ -63,7 +65,36 @@
                         <label class="filter-col" style="margin-right:0;" for="name">По батькові:</label>
                         <input type="text" class="form-control" name="patronymic" id="patronymic">
                       </div>
-                  <button type="submit" class="btn btn-default">Шукати <span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                    <div class="form-group inner pull-right">
+                      <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-perpage">Регіон:</label>
+                            <select id="pref-perpage" class="form-control" name="region">
+                                {% for region in regions %}
+                                <option value="{{ region.id }}">{{ region }}</option>
+                                {% endfor %}
+                                <option selected="selected" value="all">Всі</option>
+                            </select>                                
+                        </div>
+                        <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-perpage">Орган:</label>
+                            <select id="pref-perpage" class="form-control" name="organ">
+                                {% for organ in organs %}
+                                <option value="{{ organ.id }}">{{ organ }}</option>
+                                {% endfor %}
+                                <option selected="selected" value="all">Всі</option>
+                            </select>                                
+                        </div>
+                       <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-perpage">Тип експерта:</label>
+                            <select id="pref-perpage" class="form-control" name="type">
+                                <option selected="selected" value="all">Всі експерти</option>
+                                <option value="False">Не є фахівцями держ. спец. установ</option>
+                                <option value="True">Фахівці держ. спец. установ</option>
+                            </select>                                
+                        </div>
+                      </div>
+                  <button type="submit" class="btn btn-default btn_l2margin">Шукати <span class="glyphicon glyphicon-search"></span></button>
                     </form>
                   </div>
                 </div>

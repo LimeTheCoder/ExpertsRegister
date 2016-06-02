@@ -3,12 +3,17 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
-from .models import Expert, Validation
+from .models import Expert, Validation, Region, DergOrgan
 import pdfkit
+import logging
+
+logger = logging.getLogger(__name__)
 
 def main(request):
 	expert_lst = Expert.objects.all()
 	msgs = []
+	regions = Region.objects.all()
+	organs = DergOrgan.objects.all()
 	if request.method == 'POST':
 		if 'name' in request.POST and request.POST['name'] != "":
 			expert_lst = expert_lst.filter(name=request.POST['name'])
@@ -19,15 +24,40 @@ def main(request):
 		if 'patronymic' in request.POST and request.POST['patronymic'] != "":
 			expert_lst = expert_lst.filter(patronymic=request.POST['patronymic'])
 			msgs.append('patronymic : ' + request.POST['patronymic'])
+		if 'region' in request.POST and request.POST['region'] != 'all':
+			reg = Region.objects.get(id=request.POST['region'])
+			expert_lst = expert_lst.filter(organization__region=reg)
+			msgs.append('region : ' + str(reg))
+		if 'organ' in request.POST and request.POST['organ'] != 'all':
+			org = DergOrgan.objects.get(id=request.POST['organ'])
+			expert_lst = expert_lst.filter(organ=org)
+			msgs.append('organ : ' + str(org))
+		if 'type' in request.POST and request.POST['type'] != 'all':
+			if request.POST['type'] == "True":
+				expert_lst = expert_lst.filter(expert_type=True)
+			else:
+				expert_lst = expert_lst.filter(expert_type=False)
+			msgs.append('expert type : ' + request.POST['type'])
 
-	print expert_lst
-	context = {'experts' : expert_lst, 'msgs' : msgs}
+	context = {'experts' : expert_lst, 'msgs' : msgs, 'regions' : regions, 'organs' : organs}
 
 	return render(request, 'register/main_page.html', context)
 
 def validation(request, expert_id):
 	expert = Expert.objects.get(id=expert_id)
 	validations = Validation.objects.filter(expert=expert)
+	'''
+	val_params = []
+	for validation in validations:
+		specialities = validation.expert_speciality.all()
+		uniq_kinds = set([spec.expertise_kind for spec in specialities])
+		uniq_classes = set([kind.expertise_class for kind in uniq_kinds])
+		val = {}
+		for exp_class in uniq_classes:
+			kinds = set([kind for kind in uniq_kinds if kind.expertise_class == exp_class])
+			val[exp_class] = kinds
+		val_params.append(val)
+	'''
 
 	if 'to_pdf_btn' in request.GET:
 		context = {'validations' : validations, 'organization' : expert.organization, 'export_mode' : True}
