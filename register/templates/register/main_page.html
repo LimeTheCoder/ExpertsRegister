@@ -10,11 +10,79 @@
 
 	<script src="{% static "js/bootstrap.min.js" %}"></script>
 	<script src="{% static "js/bootstrap.min.js" %}"></script>
+<style>
+    .inner {
+    display: inline-block;
+  }
+    .btn_rmargin { 
+    margin-right: 10%;
+   }
+    .btn_l2margin { 
+    margin-left: 10%;
+   }
+    .btn_lmargin { 
+    margin-left: 2%;
+   }
+   .btn_bmargin { 
+    margin-bottom: 3%;
+   }
+  </style>
 </head>
 
 <body>
 <div class="jumbotron">
-  <center><h2>Experts register</h2></center> 
+  <center><h2>Реєстр атестованих судових експертів</h2></center> 
+</div>
+
+{% if msgs %}
+<div class="alert alert-success">
+  <strong>Здійснено пошук за параметрами</strong><br>
+  {% for msg in msgs %} 
+  {{ msg }} <br>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+  <div class="row">
+        <div id="filter-panel" class="collapse filter-panel">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                  <div class="col-md-4">
+                    <form action= {{ request.get_full_path }} method="POST">{% csrf_token %}
+                      <div class="form-group">
+                        <label class="filter-col" style="margin-right:0;" for="surname">Прізвище:</label>
+                        <input type="text" class="form-control" name="surname" id="surname">
+                      </div>
+                      <div class="form-group">
+                        <label class="filter-col" style="margin-right:0;" for="name">Ім'я:</label>
+                        <input type="text" class="form-control" name="name" id="name">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="filter-col" style="margin-right:0;" for="name">По батькові:</label>
+                        <input type="text" class="form-control" name="patronymic" id="patronymic">
+                      </div>
+                  <button type="submit" class="btn btn-default">Шукати <span class="glyphicon glyphicon-search"></span></button>
+                    </form>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="inner btn_lmargin btn_bmargin">    
+        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#filter-panel">
+            <span class="glyphicon glyphicon-cog"></span> Пошук
+        </button>
+        </div>
+        {% if msgs %}
+        <div class="inner btn_lmargin btn_bmargin">
+        <a type="button" class="btn btn-primary" name="back_button"
+         href="{% url 'main_page' %}">
+            <span class="glyphicon glyphicon-record"></span> Показати всі
+        </a>
+        </div>
+        {% endif %}
+  </div>
 </div>
 
 {% if experts %}

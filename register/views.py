@@ -8,8 +8,20 @@ import pdfkit
 
 def main(request):
 	expert_lst = Expert.objects.all()
+	msgs = []
+	if request.method == 'POST':
+		if 'name' in request.POST and request.POST['name'] != "":
+			expert_lst = expert_lst.filter(name=request.POST['name'])
+			msgs.append('name : ' + request.POST['name'])
+		if 'surname' in request.POST and request.POST['surname'] != "":
+			expert_lst = expert_lst.filter(surname=request.POST['surname'])
+			msgs.append('surname : ' + request.POST['surname'])
+		if 'patronymic' in request.POST and request.POST['patronymic'] != "":
+			expert_lst = expert_lst.filter(patronymic=request.POST['patronymic'])
+			msgs.append('patronymic : ' + request.POST['patronymic'])
 
-	context = {'experts' : expert_lst}
+	print expert_lst
+	context = {'experts' : expert_lst, 'msgs' : msgs}
 
 	return render(request, 'register/main_page.html', context)
 
