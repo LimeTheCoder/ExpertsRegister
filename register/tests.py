@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Organization, Validation, Expert
+from .models import Organization, Validation, Expert, Region
 from django.conf import settings
 import django.utils
 from django.db import IntegrityError
@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 # Create your tests here.
 class OrganModelTest(TestCase):
 	def setUp(self):
-		Organization.objects.create(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region', address='Kuiv, Polytecnichna st. 56', phoneNumber='070324', region='Kyiv')
-		Organization.objects.create(name='DNDEKTS MIA of Ukraine', address='Kyiv, Polytecnichna st. 67', phoneNumber='98798332', region='Kyiv')
+		region = Region.objects.create(name='Kyiv')
+		Organization.objects.create(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region', address='Kuiv, Polytecnichna st. 56', phoneNumber='070324', region=region)
+		Organization.objects.create(name='DNDEKTS MIA of Ukraine', address='Kyiv, Polytecnichna st. 67', phoneNumber='98798332', region=region)
 
 	def test_creation(self):
 		organ = Organization.objects.get(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region')
@@ -26,7 +27,7 @@ class OrganModelTest(TestCase):
 		self.assertEqual(str(Organization._meta.verbose_name_plural), "organizations")
 
 	def test_obj_cnt(self):
-		self.assertEqual(len(Organization.objects.all()), 4)#??
+		self.assertEqual(len(Organization.objects.all()), 2)
 
 	def test_copy(self):
 		organ = Organization.objects.get(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region')
@@ -35,10 +36,10 @@ class OrganModelTest(TestCase):
 		self.assertEqual(len(Organization.objects.filter(name='NDEKTS at the Interior Ministry of Ukraine in Odessa region')), 2)
 
 	def test_delete_method(self):
-		organ = Organization.objects.get(name='DNDEKTS MIA of Ukra')
+		organ = Organization.objects.get(name='DNDEKTS MIA of Ukraine')
 		organ.delete()
 		try:
-			obj = Organization.objects.get(name='DNDEKTS MIA of Ukra')
+			obj = Organization.objects.get(name='DNDEKTS MIA of Ukraine')
 		except Organization.DoesNotExist:
 			obj = None
 
