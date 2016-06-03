@@ -83,7 +83,24 @@
         <td>{{ validation.name }}</td>
         <td>{{ validation.date_begin }}</td>
         <td>{{ validation.date_end }}</td>
-      
+        <td>
+          {% for obj in params.uniq_classes %}
+           {{ obj }}
+           <br>
+          {% endfor %}
+        </td>
+        <td>
+          {% for obj in params.uniq_kinds %}
+           {{ obj }}
+           <br>
+          {% endfor %}
+        </td>
+        <td>
+          {% for obj in params.specialities %}
+           {{ obj }}
+           <br>
+          {% endfor %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>

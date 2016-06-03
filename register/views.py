@@ -46,24 +46,30 @@ def main(request):
 def validation(request, expert_id):
 	expert = Expert.objects.get(id=expert_id)
 	validations = Validation.objects.filter(expert=expert)
-	'''
-	val_params = []
+	
+	val_params = {}
 	for validation in validations:
 		specialities = validation.expert_speciality.all()
 		uniq_kinds = set([spec.expertise_kind for spec in specialities])
 		uniq_classes = set([kind.expertise_class for kind in uniq_kinds])
+		val_params['specialities'] = specialities
+		val_params['uniq_kinds'] = uniq_kinds
+		val_params['uniq_classes'] = uniq_classes
+
+		'''
 		val = {}
+		
 		for exp_class in uniq_classes:
 			kinds = set([kind for kind in uniq_kinds if kind.expertise_class == exp_class])
 			val[exp_class] = kinds
 		val_params.append(val)
-	'''
+		'''
 
 	if 'to_pdf_btn' in request.GET:
-		context = {'validations' : validations, 'organization' : expert.organization, 'export_mode' : True}
+		context = {'validations' : validations, 'organization' : expert.organization, 'export_mode' : True, 'params' : val_params}
 		return render_to_pdf('register/validation_page.html', context)
 	
-	context = {'validations' : validations, 'organization' : expert.organization}
+	context = {'validations' : validations, 'organization' : expert.organization, 'params' : val_params}
 	return render(request, 'register/validation_page.html', context)
 
 def render_to_pdf(template_src, context_dict):
